@@ -1,0 +1,61 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("io.micronaut.application") version "2.0.6"
+    id "org.flywaydb.flyway" version "8.0.0-beta2"
+}
+
+version = "0.1"
+group = "com.klevu.task"
+
+repositories {
+    mavenCentral()
+}
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.klevu.task.*")
+    }
+}
+
+dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-runtime")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("javax.annotation:javax.annotation-api")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    runtimeOnly("org.postgresql:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:testcontainers")
+    implementation("io.micronaut:micronaut-validation")
+
+    annotationProcessor("io.micronaut.data:micronaut-data-processor:3.0.1")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa:3.0.1")
+
+    implementation("io.micronaut.flyway:micronaut-flyway")
+
+}
+
+
+application {
+    mainClass.set("com.klevu.task.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
+}
+
+flyway {
+    url = "${DATASOURCE_URL:'jdbc:postgresql://127.0.0.1:5432/klevu'}"
+    user = 'postgres'
+    password = ''
+    locations = [
+            'classpath:databasemigrations',
+            "filesystem:${project.projectDir}/src/main/resources/databasemigrations"
+    ]
+}
+test.dependsOn flywayClean

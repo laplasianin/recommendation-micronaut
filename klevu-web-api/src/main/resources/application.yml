@@ -1,0 +1,22 @@
+micronaut:
+  application:
+    name: 'klevuWebApi'
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+
+
+services:
+  etl: ${ETL_SERVICE_HOST:http://localhost:8081}
+  recommendation: ${RECOMMENDATION_SERVICE_HOST:http://localhost:8082}
+
+swagger-ui:
+  enabled: true
+redoc:
+  enabled: true
+  rapidoc.enabled: true

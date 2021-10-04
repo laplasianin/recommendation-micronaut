@@ -1,0 +1,37 @@
+micronaut:
+  application:
+    name: 'klevuDataEtl'
+  server:
+    port: 8081
+datasources:
+  default:
+    url: ${DATASOURCE_URL:jdbc:postgresql://127.0.0.1:5432/klevu}
+    driverClassName: 'org.postgresql.Driver'
+    username: 'postgres'
+    password: ''
+
+data:
+  file: 'selected-data.txt'
+
+jpa:
+  default:
+    packages-to-scan:
+      - 'example.micronaut'
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+        show_sql: true
+
+flyway:
+  datasources:
+    default:
+      enabled: true
+      locations:
+        - classpath:databasemigrations
+
+jooq:
+  datasources:
+    default:
+      sql-dialect: 'POSTGRES'
+      jackson-converter-enabled: true

@@ -1,0 +1,128 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("io.micronaut.application") version "2.0.6"
+    id("nu.studer.jooq") version '6.0.1'
+    id "org.flywaydb.flyway" version "8.0.0-beta2"
+}
+
+import org.jooq.meta.jaxb.Logging
+
+version = "0.1"
+group = "com.klevu.task"
+
+repositories {
+    mavenCentral()
+}
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.klevu.task.*")
+    }
+}
+
+dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-runtime")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.sql:micronaut-jooq")
+    implementation("javax.annotation:javax.annotation-api")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    runtimeOnly("org.postgresql:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:testcontainers")
+    implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut.flyway:micronaut-flyway")
+    implementation("com.xiantrimble.combinatorics:combinatorics:0.2.0")
+
+    jooqGenerator 'org.postgresql:postgresql:42.2.14'
+}
+
+
+application {
+    mainClass.set("com.klevu.task.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
+}
+
+jooq {
+    version = '3.15.1'  // the default (can be omitted)
+}
+
+jooq {
+    version = '3.15.1'  // default (can be omitted)
+    edition = nu.studer.gradle.jooq.JooqEdition.OSS  // default (can be omitted)
+
+    configurations {
+        main {  // name of the jOOQ configuration
+            generateSchemaSourceOnCompilation = true  // default (can be omitted)
+
+            generationTool {
+                logging = Logging.WARN
+                jdbc {
+                    driver = 'org.postgresql.Driver'
+                    url = 'jdbc:postgresql://localhost:5432/klevu'
+                    user = 'postgres'
+                    password = ''
+                    properties {
+                        property {
+                            key = 'ssl'
+                            value = 'false'
+                        }
+                    }
+                }
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.postgres.PostgresDatabase'
+                        inputSchema = 'public'
+                        forcedTypes {
+                            forcedType {
+                                name = 'varchar'
+                                includeExpression = '.*'
+                                includeTypes = 'JSONB?'
+                            }
+                            forcedType {
+                                name = 'varchar'
+                                includeExpression = '.*'
+                                includeTypes = 'INET'
+                            }
+                        }
+                    }
+                    generate {
+                        deprecated = false
+                        records = true
+                        immutablePojos = true
+                        fluentSetters = true
+                    }
+                    target {
+                        packageName = 'nu.studer.sample'
+                        directory = 'build/generated-src/jooq/main'  // default (can be omitted)
+                    }
+                    strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+                }
+            }
+        }
+    }
+}
+
+tasks.named('generateJooq').configure { allInputsDeclared = true }
+
+
+flyway {
+    url = "${DATASOURCE_URL:'jdbc:postgresql://127.0.0.1:5432/klevu'}"
+    user = 'postgres'
+    password = ''
+    locations = [
+            'classpath:databasemigrations',
+            "filesystem:${project.projectDir}/src/main/resources/databasemigrations"
+    ]
+}
+generateJooq.dependsOn flywayMigrate
+test.dependsOn flywayClean

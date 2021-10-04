@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.klevu.task
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [annotation-api, app-name, gradle, http-client, java, java-application, jdbc-hikari, jooq, junit, logback, netty-server, postgres, properties, readme, shade, testcontainers]

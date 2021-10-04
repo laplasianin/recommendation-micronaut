@@ -1,0 +1,49 @@
+version: "3.5"
+services:
+  klevu-data-etl:
+    container_name: klevu-data-etl
+    image: klevu-data-etl:latest
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    tty: true
+    hostname: klevu-data-etl
+    environment:
+      - DATASOURCE_URL=jdbc:postgresql://postgres-klevu:5432/klevu
+    networks:
+      default:
+        aliases:
+          - klevu-data-etl
+  klevu-data-recommendation:
+    container_name: klevu-data-recommendation
+    image: klevu-data-recommendation:latest
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    tty: true
+    hostname: klevu-data-recommendation
+    environment:
+      - DATASOURCE_URL=jdbc:postgresql://postgres-klevu:5432/klevu
+    networks:
+      default:
+        aliases:
+          - klevu-data-recommendation
+  klevu-web-api:
+    container_name: klevu-web-api
+    image: klevu-web-api:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    tty: true
+    hostname: klevu-web-api
+    environment:
+      - RECOMMENDATION_SERVICE_HOST=http://klevu-data-recommendation:8082
+      - ETL_SERVICE_HOST=http://klevu-data-etl:8081
+    networks:
+      default:
+        aliases:
+          - klevu-web-api
+networks:
+  default:
+    name: klevu-net
+    driver: bridge

@@ -1,0 +1,23 @@
+version: "3.5"
+services:
+  postgres:
+    container_name: postgres-klevu
+    image: postgres:12.3
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=postgres
+      - POSTGRES_MULTIPLE_DATABASES=klevu
+    volumes:
+      - ./pg-init-scripts:/docker-entrypoint-initdb.d
+    hostname: postgres
+    networks:
+      default:
+        aliases:
+          - postgres
+networks:
+  default:
+    name: klevu-net
+    driver: bridge
