@@ -2,6 +2,8 @@
 
 ## getting recommendations by given product
 
+![Architecture](/static/system-architecture.jpg?raw=true "Architecture")
+
 Requirements:
 - Java 11 or higher
 - Postgers (will be run in docker during setup)
@@ -101,3 +103,20 @@ http://localhost:8080/swagger-ui - swagger API
 - No add new purchase API implemented (no needed by requirements but good to have). This is easy in current architecture - just upsert logic
 - Improve resilience logic - set rate limiters, configure circuit breaker more carefully
 - Shared DB pre DATA-ETL and RECOMMENDATION microservices - since DATA-ETL is one-time purpose microservice - I believe it is fine 
+
+
+## Swagger example:
+
+![Swagger](/static/swagger.jpg?raw=true "Swagger")
+
+
+## Docker example:
+
+![Docker](/static/docker-example-1.jpg?raw=true "Docker")
+
+![Docker](/static/docker-example-2.jpg?raw=true "Docker")
+
+
+## Web-api example:
+
+![Web API example](/static/web-api-example.jpg?raw=true "Web API example")
