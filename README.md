@@ -15,7 +15,7 @@ The idea is to have 3 microservices:
 - WEB-API is an API gateway;
 
 
-## Data ETL Microservice (klevu-data-etl)
+# Data ETL Microservice (klevu-data-etl)
 
 ### Tech stack
 - Micronaut
@@ -26,13 +26,29 @@ The idea is to have 3 microservices:
 - JUnit 5
 - Testcontainers for tests
 
-The idea is to save precalculate recommendation weights for each permutation of products and save precomputed data into DB. This makes getting calcuation is a simple operation of simple select from DB
+The idea is to save precalculated recommendation weights for each permutation of products and save precomputed data into DB. This makes getting calcuation is a simple operation of simple select from DB
+
+Weight columns means how many times this product bought with targeted. 
+![Precalculated](/static/preprocessed.jpg?raw=true "Precalculated")
+
+Products table:
+![Precalculated](/static/products.jpg?raw=true "Precalculated")
+
+Pros&Cons:
+
+Pros: 
+- Easy to get recommendations - just a simple SQL query
+- Easy to add new purchases
+- Easy to cache
+
+Cons:
+- Double memory consuming - we need to store all permutations of all items. 
 
 TODOS:  
 - The test data source is small so I did not implement any performance improvements. I only do sync batch inserts and thats is enough for task purposes
 - API does not support retries. If you will try to extract data again - it will fail if exception. Just did not ahve enough time to implement upsert logic
 
-## Recommendation Microservice (klevu-data-recommendation)
+# Recommendation Microservice (klevu-data-recommendation)
 
 ### tech stack
 - Micronaut
@@ -47,7 +63,7 @@ TODOS:
 TODOS:
 - Add caching (in memory or distributed). Just did not have enough time 
   
-### WEB-API microservice (klevu-web-api)
+# WEB-API microservice (klevu-web-api)
 
 ### tech stack
 - Micronaut
